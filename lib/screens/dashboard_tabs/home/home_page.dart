@@ -391,6 +391,8 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 
 class HomeScreen extends StatefulWidget {
+  final Map<String, dynamic> user;
+  HomeScreen({required this.user});
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -735,107 +737,237 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+
+
   Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: Offset(0, 10),
+  // Get user name and city from the user map passed from Dashboard
+  String userName = widget.user['full_name'] ?? 'Traveler'; // default if null
+  String userLocation = widget.user['city'] ?? 'Your City'; // default if null
+
+  return Container(
+    padding: EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 20,
+          offset: Offset(0, 10),
+        ),
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.9),
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color(0xFF2C5F5D),
-                                  Color(0xFFFF8A00),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.waving_hand,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hi, Muskan!',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2C5F5D),
-                                  ),
-                                ),
-                                Text(
-                                  'Ready for your next adventure?',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color(0xFF2C5F5D),
+                                Color(0xFFFF8A00),
                               ],
                             ),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFFFF8A00).withOpacity(0.2),
-                        Color(0xFF2C5F5D).withOpacity(0.1),
+                          child: Icon(
+                            Icons.waving_hand,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hi, $userName!',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2C5F5D),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    '$userLocation',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  // Future: Make this clickable to open map for selecting location
+                                  // GestureDetector(
+                                  //   onTap: () {
+                                  //     // TODO: Open map to select location
+                                  //   },
+                                  // ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.notifications, color: Color(0xFF2C5F5D)),
-                    onPressed: () {
-                      _showSnackBar('Notifications feature coming soon!');
-                    },
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFFFF8A00).withOpacity(0.2),
+                      Color(0xFF2C5F5D).withOpacity(0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.notifications, color: Color(0xFF2C5F5D)),
+                  onPressed: () {
+                    _showSnackBar('Notifications feature coming soon!');
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
+
+
+
+
+
+  // Widget _buildHeader() {
+  //   return Container(
+  //     padding: EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(20),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.08),
+  //           blurRadius: 20,
+  //           offset: Offset(0, 10),
+  //         ),
+  //       ],
+  //     ),
+  //     child: ClipRRect(
+  //       borderRadius: BorderRadius.circular(20),
+  //       child: BackdropFilter(
+  //         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+  //         child: Container(
+  //           decoration: BoxDecoration(
+  //             color: Colors.white.withOpacity(0.9),
+  //             borderRadius: BorderRadius.circular(20),
+  //           ),
+  //           child: Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               Expanded(
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Row(
+  //                       children: [
+  //                         Container(
+  //                           padding: EdgeInsets.all(8),
+  //                           decoration: BoxDecoration(
+  //                             gradient: LinearGradient(
+  //                               colors: [
+  //                                 Color(0xFF2C5F5D),
+  //                                 Color(0xFFFF8A00),
+  //                               ],
+  //                             ),
+  //                             borderRadius: BorderRadius.circular(12),
+  //                           ),
+  //                           child: Icon(
+  //                             Icons.waving_hand,
+  //                             color: Colors.white,
+  //                             size: 20,
+  //                           ),
+  //                         ),
+  //                         SizedBox(width: 12),
+  //                         Expanded(
+  //                           child: Column(
+  //                             crossAxisAlignment: CrossAxisAlignment.start,
+  //                             children: [
+  //                               Text(
+  //                                 'Hi, Muskan!',
+  //                                 style: TextStyle(
+  //                                   fontSize: 24,
+  //                                   fontWeight: FontWeight.bold,
+  //                                   color: Color(0xFF2C5F5D),
+  //                                 ),
+  //                               ),
+  //                               Text(
+  //                                 'Ready for your next adventure?',
+  //                                 style: TextStyle(
+  //                                   fontSize: 16,
+  //                                   color: Colors.grey[600],
+  //                                 ),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               Container(
+  //                 decoration: BoxDecoration(
+  //                   gradient: LinearGradient(
+  //                     colors: [
+  //                       Color(0xFFFF8A00).withOpacity(0.2),
+  //                       Color(0xFF2C5F5D).withOpacity(0.1),
+  //                     ],
+  //                   ),
+  //                   borderRadius: BorderRadius.circular(16),
+  //                 ),
+  //                 child: IconButton(
+  //                   icon: Icon(Icons.notifications, color: Color(0xFF2C5F5D)),
+  //                   onPressed: () {
+  //                     _showSnackBar('Notifications feature coming soon!');
+  //                   },
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildQuickActions() {
     return Row(

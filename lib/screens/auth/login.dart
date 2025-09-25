@@ -2453,7 +2453,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         _showSnackBar('Welcome back! Login successful! ✈️', isSuccess: true);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => HomeScreen()),
+          MaterialPageRoute(builder: (_) => HomeScreen(user: data['user'])),
         );
       } else {
         _showSnackBar(data['message'] ?? 'Login failed');

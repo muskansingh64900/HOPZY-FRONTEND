@@ -1447,6 +1447,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'dart:convert';
+import '../../utils/constants.dart';
+import '../dashboard_tabs/home/home_page.dart';
 import 'package:http/http.dart' as http;
 
 class SignupPage extends StatefulWidget {
@@ -1576,46 +1578,53 @@ class _SignupPageState extends State<SignupPage> with TickerProviderStateMixin {
   }
 
   Future<void> signup() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => isLoading = true);
+  _formKey.currentState!.save();
+  setState(() => isLoading = true);
 
-    final url = Uri.parse('http://localhost:5000/api/auth/signup');
-    final body = jsonEncode({
-      'full_name': _fullNameController.text.trim(),
-      'email': _emailController.text.trim().toLowerCase(),
-      'phone_number': _phoneController.text.trim(),
-      'password': _passwordController.text.trim(),
-      'city': _cityController.text.trim(),
-      'gender': gender,
-      'age_group': int.tryParse(_ageController.text.trim()),
-      'travel_interests': travelInterests,
-      'signup_method': signupMethod
-    });
+  final body = jsonEncode({
+    'full_name': _fullNameController.text.trim(),
+    'email': _emailController.text.trim().toLowerCase(),
+    'phone_number': _phoneController.text.trim(),
+    'password': _passwordController.text.trim(),
+    'city': _cityController.text.trim(),
+    'gender': gender,
+    'age_group': int.tryParse(_ageController.text.trim()),
+    'travel_interests': travelInterests,
+    'signup_method': signupMethod,
+  });
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
+  try {
+    final response = await http.post(
+      Uri.parse(API.SIGNUP),
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    print("Response code: ${response.statusCode}");
+    print("Response body: ${response.body}");
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 201 || data['message'] == 'User created successfully') {
+      _showSnackBar('Welcome to HOPZY! Account created successfully! ✈️', isSuccess: true);
+      // Navigate to HomeScreen directly after signup
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => HomeScreen(user: data['user'])),
       );
-
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 201) {
-        _showSnackBar('Welcome to HOPZY! Account created successfully! ✈️', isSuccess: true);
-        Navigator.pop(context);
-      } else {
-        _showSnackBar(data['message'] ?? 'Signup failed. Please try again.');
-      }
-    } catch (e) {
-      _showSnackBar('Network error. Please check your connection.');
-      print('Signup error: $e');
-    } finally {
-      setState(() => isLoading = false);
+    } else {
+      _showSnackBar(data['message'] ?? 'Signup failed. Please try again.');
     }
+  } catch (e) {
+    _showSnackBar('Network error. Please check your connection.');
+    print('Signup error: $e');
+  } finally {
+    setState(() => isLoading = false);
   }
+}
+
 
   void _showSnackBar(String message, {bool isSuccess = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
